@@ -1,6 +1,7 @@
 import re
 from functools import reduce
 
+
 def parse_file(filename):
     with open(filename) as f:
         current = {}
@@ -13,6 +14,7 @@ def parse_file(filename):
                 [add_part(current, entry) for entry in line.split(" ")]
         entries.append(current)
     return entries
+
 
 def add_part(dict, part):
     kv = part.strip().split(":")
@@ -60,15 +62,17 @@ def validate_pid(pid):
     return re.match('[0-9]{9}', pid) is not None and len(pid) == 9
 
 
+rules = {'byr': validate_byr,
+         'iyr': validate_iyr,
+         'eyr': validate_eyr,
+         'hcl': validate_hcl,
+         'hgt': validate_hgt,
+         'ecl': validate_ecl,
+         'pid': validate_pid}
+
+
 def valid_passport(passport):
-    rules = {'byr': validate_byr,
-             'iyr': validate_iyr,
-             'eyr': validate_eyr,
-             'hcl': validate_hcl,
-             'hgt': validate_hgt,
-             'ecl': validate_ecl,
-             'pid': validate_pid}
-    return reduce(lambda valid, key: valid and rules[key](passport[key]), rules, True)
+    return reduce(lambda valid, key: valid and rules[key](passport[key]), rules, valid_fields_present(passport))
 
 
 def validate_passports(passports):
@@ -76,8 +80,7 @@ def validate_passports(passports):
 
 
 def valid_fields_present(passport):
-    validKeys = ['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']
-    missingKeys = [key for key in validKeys if key not in passport]
+    missingKeys = [key for key in rules if key not in passport]
     return len(missingKeys) == 0
 
 
