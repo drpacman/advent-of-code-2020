@@ -30,11 +30,7 @@ def count_containing_bags(bags, target, count_self = False):
     if contents == {}:
         return 1
     sub_bag_counts = [ value*count_containing_bags(bags, bag, True) for bag, value in contents.items() ]
-    if count_self:
-        acc = 1
-    else:
-        acc = 0
-    return reduce(lambda acc,x: acc + x, sub_bag_counts, acc )
+    return reduce(lambda acc,x: acc + x, sub_bag_counts, 1 if count_self else 0 )
             
 
 bags = load_bags("input.txt")
